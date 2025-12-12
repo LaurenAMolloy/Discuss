@@ -1,4 +1,4 @@
-import Link from 'next/Link';
+import Link from 'next/link';
 
 import {
     Navbar,
@@ -6,15 +6,14 @@ import {
     NavbarContent,
     NavbarItem,
     Input,
-    Button,
-    Avatar
 } from '@nextui-org/react';
+import HeaderAuth from './header-auth';
 
-import { auth } from '@/auth';
+
 
 //Wait for the promise from auth to be resolved
-export default async function Header() {
-    const session = await auth();
+export default  function Header() {
+    
 
      return (
         <Navbar className="shadow mb-6">
@@ -27,13 +26,9 @@ export default async function Header() {
                     <Input />
                 </NavbarItem>
             </NavbarContent>
-
+            
             <NavbarContent justify='end'>
-                <NavbarItem >
-                    {
-                        session?.user ? <div>Signed In</div> : <div>Sign Out</div>
-                    }
-                </NavbarItem>
+                    <HeaderAuth />
             </NavbarContent>
         </Navbar>
      )
