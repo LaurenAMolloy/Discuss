@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from "react";
+import { useActionState, startTransition } from "react";
 
 import {
     Input,
@@ -13,7 +13,17 @@ import {
 import * as actions from '@/actions'
 
 export default function TopicCreateForm() {
+    //Pass in servers actions and whatever is returned from server actions will be the new form state
     const [formState, action] = useActionState(actions.createTopic, { errors: {}});
+
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        //DO NOT BLOCK UI!
+        startTransition(() => {
+          action(formData);
+        });
+      }
 
     //user clicks new topic
     //show popover with form
@@ -24,19 +34,28 @@ export default function TopicCreateForm() {
             <Button color="primary">Create a Topic</Button>
         </PopoverTrigger>
         <PopoverContent>
-            <form action={action}>
+            <form onSubmit={handleSubmit} noValidate>
                 <div className="flex flex-col gap-4 p-4 w-80">
                     <h3 className="text-lg">Create a Topic</h3>
                     <Input 
                     name="name" 
                     label="Name" 
                     labelPlacement="outside" 
-                    placeholder="Name"></Input>
+                    placeholder="Name"
+                    isInvalid={!!formState.errors.name}
+                    errorMessage={formState.errors.name?.join(',')}
+                    >
+                    </Input>
+
                     <Textarea
                     name="description" 
                     label='Description' 
                     labelPlacement='outside' 
-                    placeholder='Describe your topic'></Textarea>
+                    placeholder='Describe your topic'
+                    isInvalid={!!formState.errors.description}
+                    errorMessage={formState.errors.description?.join(',')}
+                    ></Textarea>
+                    {formState.errors._form? <div className="rounded p-2 bg-red-200 border border-red-400">{formState.errors._form?.join(',')}</div> : null}
                     <Button type="submit">Submit</Button>
                 </div>
             </form>
